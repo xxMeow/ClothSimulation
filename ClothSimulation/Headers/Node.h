@@ -11,48 +11,39 @@
 class Node
 {
 public:
-	double	mass;
-	vec3	force;
-	vec3	position;
-	vec3	velocity;
-	vec3	acceleration;
-	vec3	normal;
-	bool	isFixed;
+    double  mass;           // In this project it will always be 1
+    bool    isFixed;        // Use to pin the cloth
+    Vec2    texCoord;       // Texture coord
+	Vec3	currPos;
+	Vec3	prevPos;
+    Vec3    normal;         // TODO: For shading
+	Vec3	acceleration;
 
 public:
-	Node(void)
+    Node(void) {}
+	Node(Vec3 pos)
+    {
+        mass = 1.0;
+        isFixed = false;
+        currPos = pos;
+    }
+	~Node(void) {}
+
+	void addForce(Vec3 force)
 	{
-		isFixed = false;
-	}
-	Node(vec3 init_pos)
-	{
-		isFixed = false;
-		position = init_pos;
-		mass = 1.0;
-	}
- 
-	~Node(void)
-	{
+        acceleration += force/mass;
 	}
 
-	double	getPosX(void) { return position.getX(); }
-	double	getPosY(void) { return position.getY(); }
-	double	getPosZ(void){ return position.getZ(); }
-
-	void add_force(vec3 additional_force)
+	void integrate(double airFriction, double timeStep) // Only non-fixed nodes take integration
 	{
-		force += additional_force;
-	}
-
-	void integrate(double dt)
-	{
-		if (!isFixed)
+		if (!isFixed) // Verlet integration
 		{
-			//Basic Implements 2-2. Integration
-		}
-		/*initialize Force*/
-		force.x = force.y = force.z= 0.0;
+            Vec3 tempPos = currPos;
+            currPos = currPos + (currPos-prevPos)*(1-airFriction) + acceleration*pow(timeStep, 2);
+            prevPos = tempPos;
+            acceleration = Vec3(0.0, 0.0, 0.0); // Reset acceleration
+        }
 	}
 
-	void draw();
+//	void draw();
 };

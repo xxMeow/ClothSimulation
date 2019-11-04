@@ -6,37 +6,36 @@
 
 using namespace std;
 
-class mass_spring{
+class Spring
+{
 public:
-	double		spring_coef;
-	double		damping_coef;
-	Node	*p1;
-	Node	*p2;
-	double		initial_length;
- 
+    Node *node1;
+    Node *node2;
+	double initLength;
 public:
- 
-	mass_spring(Node *p1, Node *p2)
+	Spring(Node *n1, Node *n2)
 	{
-		damping_coef = 5.0;
-		this->p1 = p1;
-		this->p2 = p2;
-		init();
+        node1 = n1;
+        node2 = n2;
+		
+        Vec3 sLength = node2->currPos - node1->currPos;
+        initLength = sLength.length();
 	}
 
-	void init()
+	void applyInternalForce() // Compute spring internal force
 	{
-		vec3 S_length = (p2->position - p1->position);
-		initial_length = S_length.length();
+        Vec3 diffVec = node2->currPos - node1->currPos;
+        double currDist = diffVec.length();
+        Vec3 posOffset = diffVec * (1 - initLength/currDist) / 2;
+        
+        if (!node1->isFixed && !node2->isFixed) {
+            node1->currPos += posOffset;
+            node2->currPos -= posOffset;
+        } else if (node1->isFixed && !node2->isFixed) {
+            node2->currPos -= posOffset*2;
+        } else if (!node1->isFixed && node2->isFixed) {
+            node1->currPos += posOffset*2;
+        }
+        
 	}
-
-	void internal_force(double dt)
-	{
-		//Basic Implements 2-1. Compute Spring Force
-		/*add hook_force and damping force*/
-		// node1->add_force(force);
-		// node2->add_force(force);
-	}
-	void draw();
-
 };

@@ -12,9 +12,6 @@
 		CA7A28EA236DDD16005139B4 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CA7A28E9236DDD16005139B4 /* libGLEW.2.1.0.dylib */; };
 		CA7A28EE236DDD55005139B4 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CA7A28ED236DDD55005139B4 /* glad.c */; };
 		CA7A28FA236DE27D005139B4 /* HeaderProc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */; };
-		CA7A2907236DE571005139B4 /* Viewer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA7A2904236DE571005139B4 /* Viewer.cpp */; };
-		CA7A2908236DE571005139B4 /* Simulator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA7A2905236DE571005139B4 /* Simulator.cpp */; };
-		CA7A2909236DE571005139B4 /* Draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA7A2906236DE571005139B4 /* Draw.cpp */; };
 		CA9A0AC0236DA3C20016A886 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA9A0ABF236DA3C20016A886 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -31,25 +28,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CA0CB939236F1B3B0065DBE2 /* texture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture.jpg; sourceTree = "<group>"; };
+		CA0CB93D236F400B0065DBE2 /* Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		CA7A28E3236DDC9B005139B4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		CA7A28E7236DDD00005139B4 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../usr/local/Cellar/glfw/3.3/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		CA7A28E9236DDD16005139B4 /* libGLEW.2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.1.0.dylib; path = ../../../../usr/local/Cellar/glew/2.1.0/lib/libGLEW.2.1.0.dylib; sourceTree = "<group>"; };
 		CA7A28ED236DDD55005139B4 /* glad.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = glad.c; sourceTree = "<group>"; };
 		CA7A28F1236DDFC7005139B4 /* ClothSimulation.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ClothSimulation.entitlements; sourceTree = "<group>"; };
-		CA7A28F6236DE1C9005139B4 /* VertexShader.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = VertexShader.glsl; sourceTree = "<group>"; };
-		CA7A28F7236DE1E2005139B4 /* FragmentShader.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = FragmentShader.glsl; sourceTree = "<group>"; };
+		CA7A28F6236DE1C9005139B4 /* ClothVS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = ClothVS.glsl; sourceTree = "<group>"; };
+		CA7A28F7236DE1E2005139B4 /* ClothFS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = ClothFS.glsl; sourceTree = "<group>"; };
 		CA7A28F8236DE21E005139B4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeaderProc.cpp; sourceTree = "<group>"; };
 		CA7A28FC236DE29A005139B4 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		CA7A28FE236DE559005139B4 /* Node.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
 		CA7A28FF236DE559005139B4 /* Spring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Spring.h; sourceTree = "<group>"; };
-		CA7A2900236DE55A005139B4 /* Simulator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Simulator.h; sourceTree = "<group>"; };
 		CA7A2901236DE55A005139B4 /* Vector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
-		CA7A2902236DE55A005139B4 /* Viewer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Viewer.h; sourceTree = "<group>"; };
 		CA7A2903236DE55A005139B4 /* Cloth.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Cloth.h; sourceTree = "<group>"; };
-		CA7A2904236DE571005139B4 /* Viewer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Viewer.cpp; sourceTree = "<group>"; };
-		CA7A2905236DE571005139B4 /* Simulator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Simulator.cpp; sourceTree = "<group>"; };
-		CA7A2906236DE571005139B4 /* Draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Draw.cpp; sourceTree = "<group>"; };
 		CA9A0ABC236DA3C20016A886 /* ClothSimulation */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ClothSimulation; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA9A0ABF236DA3C20016A886 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -68,6 +62,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CA0CB938236F1B100065DBE2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				CA0CB939236F1B3B0065DBE2 /* texture.jpg */,
+			);
+			path = Images;
+			sourceTree = "<group>";
+		};
 		CA7A28E2236DDC9B005139B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -81,14 +83,13 @@
 		CA7A28F3236DE03A005139B4 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				CA7A2903236DE55A005139B4 /* Cloth.h */,
-				CA7A28FE236DE559005139B4 /* Node.h */,
-				CA7A2900236DE55A005139B4 /* Simulator.h */,
-				CA7A28FF236DE559005139B4 /* Spring.h */,
-				CA7A2901236DE55A005139B4 /* Vector.h */,
-				CA7A2902236DE55A005139B4 /* Viewer.h */,
-				CA7A28F8236DE21E005139B4 /* Program.h */,
 				CA7A28FC236DE29A005139B4 /* stb_image.h */,
+				CA7A2901236DE55A005139B4 /* Vector.h */,
+				CA7A28FE236DE559005139B4 /* Node.h */,
+				CA7A28FF236DE559005139B4 /* Spring.h */,
+				CA7A2903236DE55A005139B4 /* Cloth.h */,
+				CA7A28F8236DE21E005139B4 /* Program.h */,
+				CA0CB93D236F400B0065DBE2 /* Display.h */,
 			);
 			path = Headers;
 			sourceTree = "<group>";
@@ -96,8 +97,8 @@
 		CA7A28F4236DE047005139B4 /* Shaders */ = {
 			isa = PBXGroup;
 			children = (
-				CA7A28F6236DE1C9005139B4 /* VertexShader.glsl */,
-				CA7A28F7236DE1E2005139B4 /* FragmentShader.glsl */,
+				CA7A28F6236DE1C9005139B4 /* ClothVS.glsl */,
+				CA7A28F7236DE1E2005139B4 /* ClothFS.glsl */,
 			);
 			path = Shaders;
 			sourceTree = "<group>";
@@ -123,14 +124,12 @@
 			isa = PBXGroup;
 			children = (
 				CA7A28F1236DDFC7005139B4 /* ClothSimulation.entitlements */,
-				CA9A0ABF236DA3C20016A886 /* main.cpp */,
 				CA7A28ED236DDD55005139B4 /* glad.c */,
 				CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */,
-				CA7A2906236DE571005139B4 /* Draw.cpp */,
-				CA7A2905236DE571005139B4 /* Simulator.cpp */,
-				CA7A2904236DE571005139B4 /* Viewer.cpp */,
-				CA7A28F4236DE047005139B4 /* Shaders */,
+				CA9A0ABF236DA3C20016A886 /* main.cpp */,
 				CA7A28F3236DE03A005139B4 /* Headers */,
+				CA7A28F4236DE047005139B4 /* Shaders */,
+				CA0CB938236F1B100065DBE2 /* Images */,
 			);
 			path = ClothSimulation;
 			sourceTree = "<group>";
@@ -193,10 +192,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CA9A0AC0236DA3C20016A886 /* main.cpp in Sources */,
-				CA7A2907236DE571005139B4 /* Viewer.cpp in Sources */,
 				CA7A28EE236DDD55005139B4 /* glad.c in Sources */,
-				CA7A2909236DE571005139B4 /* Draw.cpp in Sources */,
-				CA7A2908236DE571005139B4 /* Simulator.cpp in Sources */,
 				CA7A28FA236DE27D005139B4 /* HeaderProc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

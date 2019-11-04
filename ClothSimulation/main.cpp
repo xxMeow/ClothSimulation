@@ -8,12 +8,16 @@
 #include <iostream>
 #include <cmath>
 
-#include "Headers/Viewer.h"
-#include "Headers/Program.h"
 #include "Headers/stb_image.h"
+#include "Headers/Cloth.h"
+#include "Headers/Program.h"
+#include "Headers/Display.h"
 
 #define WIDTH 600
 #define HEIGHT 600
+
+#define AIR_FRICTION 0.02
+#define TIME_STEP 0.5
 
 /** Functions **/
 void processInput(GLFWwindow *window);
@@ -22,8 +26,9 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 /** Global **/
+double simClk;
 GLFWwindow *window;
-Viewer viewer;
+//Viewer viewer;
 
 int main(int argc, const char * argv[])
 {
@@ -41,7 +46,7 @@ int main(int argc, const char * argv[])
 #endif
     
     /** Create a GLFW window **/
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Cloth Simulator", NULL, NULL);
+    window = glfwCreateWindow(WIDTH, HEIGHT, "Cloth Simulation", NULL, NULL);
     if (window == NULL) {
         std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
@@ -61,6 +66,12 @@ int main(int argc, const char * argv[])
     // Callback functions should be registered after creating window and before initializing render loop
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
+    simClk = 0.0;
+    Cloth cloth(7, 7);
+    ClothRender clothRender(&cloth);
+    
+    cloth.addForce(Vec3(0.0, -13.0, 0.0)); // Gravity
+    
     /** Redering loop **/
     while (!glfwWindowShouldClose(window))
     {
@@ -69,13 +80,16 @@ int main(int argc, const char * argv[])
         
         /** Set background clolor **/
         glClearColor(0.2f, 0.2f, 0.5f, 1.0f); // Set color value (R,G,B,A) - Set Status
-        glClear(GL_COLOR_BUFFER_BIT); // Use the color to clear screen - Use Status
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        /** ---------------------------------- Simulation & Rendering ---------------------------------- **/
+        /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
+        cloth.integrate(AIR_FRICTION, TIME_STEP);
         
-        
-        /** ---------------------------------- Simulation & Rendering ---------------------------------- **/
+        clothRender.flush();
+        simClk += TIME_STEP;
+        cloth.collision_response(Vec3(0.0, -10.0, 0.0)); // Ground;
+        /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
         /** Display **/
         glfwSwapBuffers(window);
@@ -104,5 +118,20 @@ void processInput(GLFWwindow *window)
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
         //
+    }
+    
+    /** Camera control : [W] [S] [A] [D] **/
+    float camSpeed = 0.005f;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        cam.pos += cam.front * camSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        cam.pos -= cam.front * camSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        cam.pos -= glm::normalize(glm::cross(cam.front, cam.up)) * camSpeed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        cam.pos += glm::normalize(glm::cross(cam.front, cam.up)) * camSpeed;
     }
 }

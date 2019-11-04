@@ -1,225 +1,138 @@
 #pragma once
 
-#include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 
-#include <vector>
-#include <algorithm>
-#include <iostream>
-
-class vec2
+struct Vec2
 {
-public:
-	double x;
-	double y;
-public:
-	vec2(void)
-	{
-		x = y = 0.0;
-	}
-	vec2(double x0, double y0)
-	{
-		x = x0;
-		y = y0;
-	}
-	~vec2(void)
-	{
-	}
-public:
- 
-	double	getX(void) { return x; }
-	double	getY(void) { return y; }
-public:
-	void operator=(vec2 &v)
-	{
-		x = v.x;
-		y = v.y;
-	}
-	vec2 operator+(vec2 v)
-	{
-		vec2 res;
-		res.x = x + v.x;
-		res.y = y + v.y;
-		return res;
-	}
-	vec2 operator-(vec2 v)
-	{
-		vec2 res;
-		res.x = x - v.x;
-		res.y = y - v.y;
-		return res;
-	}
-	vec2 operator/(double v)
-	{
-		vec2 res;
-		res.x = x / v;
-		res.y = y / v;
-		return res;
-	}
-	vec2 operator*(double v)
-	{
-		vec2 res;
-		res.x = x*v;
-		res.y = y*v;
-		return res;
-	}
-	vec2 &operator+=(vec2 v)
-	{
-		x += v.x;
-		y += v.y;
-		return *this;
-	}
-	vec2 &operator-=(vec2 v)
-	{
-		x -= v.x;
-		y -= v.y;
-		return *this;
-	}
+    double x;
+    double y;
+    
+    Vec2(void)
+    {
+        x = 0.0;
+        y = 0.0;
+    }
+    Vec2(double x0, double y0)
+    {
+        x = x0;
+        y = y0;
+    }
+    ~Vec2() {}
+    
+    Vec2 operator+(Vec2 v)
+    {
+        return Vec2(x+v.x, y+v.y);
+    }
+    Vec2 operator-(Vec2 v)
+    {
+        return Vec2(x-v.x, y-v.y);
+    }
 
-	double length()
-	{
-		return sqrt(x*x + y*y);
-	}
-	double dist()
-	{
-		return sqrt(x*x + y*y);
-	}
-	double dist(vec2 p)
-	{
-		return sqrt((x - p.x)*(x - p.x) + (y - p.y)*(y - p.y));
-	}
+    void operator+=(Vec2 v)
+    {
+        x += v.x;
+        y += v.y;
+    }
+    void operator-=(Vec2 v)
+    {
+        x -= v.x;
+        y -= v.y;
+    }
+    
 };
 
-class vec3
+struct Vec3
 {
-
-public:
-	vec3()
+    double x;
+    double y;
+    double z;
+    
+    Vec3(void)
+    {
+        x = 0.0;
+        y = 0.0;
+        z = 0.0;
+    }
+    Vec3(double x0, double y0, double z0)
+    {
+		x = x0;
+		y = y0;
+		z = z0;
+	}
+	~Vec3(){}
+    
+    static Vec3 cross(Vec3 v1, Vec3 v2)
+    {
+        return Vec3(v1.y*v2.z - v1.z*v2.y, v1.z*v2.x - v1.x*v2.z, v1.x*v2.y - v1.y*v2.x);
+    }
+    static double dot(Vec3 v1, Vec3 v2)
+    {
+        return (v1.x*v2.x + v1.y*v2.y + v1.z*v2.z);
+    }
+    static double dist(Vec3 v1, Vec3 v2)
+    {
+        return sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.z - v2.z, 2));
+    }
+    
+	Vec3 operator+(Vec3 v)
 	{
-		x = y = z = 0.0f;
-
+		return Vec3(x+v.x, y+v.y, z+v.z);
 	}
-	vec3(double x, double y, double z){
-		this->x = x;
-		this->y = y;
-		this->z = z;
-	}
-	~vec3(){}
-public:
-
-
-	double		x;
-	double		y;
-	double		z;
-	double	getX(void) { return x; }
-	double	getY(void) { return y; }
-	double	getZ(void) { return z; }
-	vec3 operator+(vec3 v)
+	Vec3 operator-(Vec3 v)
 	{
-		vec3 result = (*this);
-		result.x += v.x;
-		result.y += v.y;
-		result.z += v.z;
-		return result;
-	}
-	vec3 operator-(vec3 v)
-	{
-		vec3 result = (*this);
-		result.x -= v.x;
-		result.y -= v.y;
-		result.z -= v.z;
-		return result;
+		return Vec3(x-v.x, y-v.y, z-v.z);
 	}
 
-	vec3 &operator+=(vec3 v)
+	void operator+=(Vec3 v)
 	{
 		x += v.x;
 		y += v.y;
 		z += v.z;
-		return *this;
 	}
-	vec3 &operator-=(vec3 v)
+	void operator-=(Vec3 v)
 	{
 		x -= v.x;
 		y -= v.y;
 		z -= v.z;
-		return *this;
 	}
-	vec3 operator*(double val)
+    
+	Vec3 operator*(double n)
 	{
-		vec3 result = (*this);
-		result.x *= val;
-		result.y *= val;
-		result.z *= val;
-		return result;
+		return Vec3(x*n, y*n, z*n);
 	}
+	Vec3 operator/(double n)
+	{
+		return Vec3(x/n, y/n, z/n);
+	}
+    
+    bool operator ==(Vec3 &v)
+    {
+        return x == v.x && y == v.y&&z == v.z;
+    }
+    bool operator!=(Vec3 &v)
+    {
+        return x != v.x || y != v.y || z != v.z;
+    }
 
-
-	vec3 operator/(double val)
-	{
-		vec3 result = (*this);
-		result.x /= val;
-		result.y /= val;
-		result.z /= val;
-		return result;
+    double length()
+    {
+        return sqrt(x*x + y*y + z*z);
+    }
+    
+    void normalize()
+    {
+        double w = length();
+        if (w < 0.00001) return;
+        
+        x /= w;
+        y /= w;
+        z /= w;
+    }
+	
+	void setZeroVec(){
+        x = 0.0;
+        y = 0.0;
+        z = 0.0;
 	}
-
-	friend vec3 operator*(double val, vec3 v)
-	{
-		v.x *= val;
-		v.y *= val;
-		v.z *= val;
-
-		return v;
-	}
-	friend vec3 operator/(double val, vec3 v)
-	{
-		v.x /= val;
-		v.y /= val;
-		v.z /= val;
-
-		return v;
-	}
-
-	vec3 Cross(vec3 v)
-	{
-		vec3 result;
-		result.x = y*v.z - z*v.y;
-		result.y = z*v.x - x*v.z;
-		result.z = x*v.y - y*v.x;
-		return result;
-	}
-	double length()
-	{
-		return sqrt(x*x + y*y + z*z);
-	}
-	void Normalize()
-	{
-		double w = length();
-		if (w < 0.00001) return;
-		x /= w;
-		y /= w;
-		z /= w;
-	}
-	double  dot(vec3 v)
-	{
-		return (x*v.x + y*v.y + z*v.z);
-	}
-	double dist(vec3 v)
-	{
-		return sqrt(pow(x - v.x, 2) + pow(y - v.y, 2) + pow(z - v.z, 2));
-	}
-	bool operator ==(vec3 &v)
-	{
-		return x == v.x && y == v.y&&z == v.z;
-	}
-	bool operator!=(vec3 &v)
-	{
-		return x != v.x || y != v.y || z != v.z;
-	}
-	void setZeroVector(){
-		x = y = z = 0.0f;
-	}
-
 };
