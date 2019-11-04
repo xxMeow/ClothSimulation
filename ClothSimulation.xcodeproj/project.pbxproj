@@ -30,6 +30,7 @@
 /* Begin PBXFileReference section */
 		CA0CB939236F1B3B0065DBE2 /* texture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture.jpg; sourceTree = "<group>"; };
 		CA0CB93D236F400B0065DBE2 /* Display.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
+		CA0CB93E23704F480065DBE2 /* texture1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = texture1.jpg; sourceTree = "<group>"; };
 		CA7A28E3236DDC9B005139B4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		CA7A28E7236DDD00005139B4 /* libglfw.3.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libglfw.3.3.dylib; path = ../../../../usr/local/Cellar/glfw/3.3/lib/libglfw.3.3.dylib; sourceTree = "<group>"; };
 		CA7A28E9236DDD16005139B4 /* libGLEW.2.1.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libGLEW.2.1.0.dylib; path = ../../../../usr/local/Cellar/glew/2.1.0/lib/libGLEW.2.1.0.dylib; sourceTree = "<group>"; };
@@ -66,6 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				CA0CB939236F1B3B0065DBE2 /* texture.jpg */,
+				CA0CB93E23704F480065DBE2 /* texture1.jpg */,
 			);
 			path = Images;
 			sourceTree = "<group>";

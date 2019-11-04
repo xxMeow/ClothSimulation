@@ -17,7 +17,7 @@
 #define HEIGHT 600
 
 #define AIR_FRICTION 0.02
-#define TIME_STEP 0.5
+#define TIME_STEP 0.01
 
 /** Functions **/
 void processInput(GLFWwindow *window);
@@ -26,9 +26,10 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 /** Global **/
-double simClk;
 GLFWwindow *window;
-//Viewer viewer;
+Cloth cloth(7, 7);
+Vec3 ground(0.0, -6.5, 0.0);
+Vec3 gravity(0.0, -9.8 / cloth.iterationFreq, 0.0);
 
 int main(int argc, const char * argv[])
 {
@@ -66,11 +67,11 @@ int main(int argc, const char * argv[])
     // Callback functions should be registered after creating window and before initializing render loop
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
-    simClk = 0.0;
-    Cloth cloth(7, 7);
     ClothRender clothRender(&cloth);
+    Vec3 initForce(10.0, 10.0, 10.0);
+    cloth.addForce(initForce);
     
-    cloth.addForce(Vec3(0.0, -13.0, 0.0)); // Gravity
+    glEnable(GL_DEPTH_TEST);
     
     /** Redering loop **/
     while (!glfwWindowShouldClose(window))
@@ -79,16 +80,20 @@ int main(int argc, const char * argv[])
         processInput(window);
         
         /** Set background clolor **/
-        glClearColor(0.2f, 0.2f, 0.5f, 1.0f); // Set color value (R,G,B,A) - Set Status
+        glClearColor(0.69f, 0.77f, 0.87f, 1.0f); // Set color value (R,G,B,A) - Set Status
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
-        cloth.integrate(AIR_FRICTION, TIME_STEP);
+        for (int i = 0; i < cloth.iterationFreq; i ++) {
+            cloth.computeForce(TIME_STEP, gravity);
+            cloth.integrate(AIR_FRICTION, TIME_STEP);
+            cloth.collision_response(ground);
+        }
+        cloth.computeNormal();
         
         clothRender.flush();
-        simClk += TIME_STEP;
-        cloth.collision_response(Vec3(0.0, -10.0, 0.0)); // Ground;
+        
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
         /** Display **/
@@ -103,7 +108,6 @@ int main(int argc, const char * argv[])
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // Reset the size of glViewport
     glViewport(0, 0, width, height);
 }
 
@@ -121,7 +125,7 @@ void processInput(GLFWwindow *window)
     }
     
     /** Camera control : [W] [S] [A] [D] **/
-    float camSpeed = 0.005f;
+    float camSpeed = 0.03f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cam.pos += cam.front * camSpeed;
     }
@@ -133,5 +137,19 @@ void processInput(GLFWwindow *window)
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cam.pos += glm::normalize(glm::cross(cam.front, cam.up)) * camSpeed;
+    }
+    
+    /** Pull cloth **/
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        cloth.addForce(Vec3(0.0, 0.0, 10.0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        cloth.addForce(Vec3(0.0, 0.0, -10.0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+        cloth.addForce(Vec3(-10.0, 0.0, 0.0));
+    }
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+        cloth.addForce(Vec3(10.0, 0.0, 0.0));
     }
 }

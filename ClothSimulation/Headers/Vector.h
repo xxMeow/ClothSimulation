@@ -75,6 +75,11 @@ struct Vec3
         return sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.z - v2.z, 2));
     }
     
+    Vec3 minus()
+    {
+        return Vec3(-x, -y, -z);
+    }
+    
 	Vec3 operator+(Vec3 v)
 	{
 		return Vec3(x+v.x, y+v.y, z+v.z);

@@ -12,7 +12,11 @@
 class Cloth
 {
 public:
-    const int nodesDensity = 4; // Should be even number?
+    const int nodesDensity = 4;
+    const int iterationFreq = 20;
+    const double structuralCoef = 500.0;
+    const double shearCoef = 10.0;
+    const double bendingCoef = 200.0;
     
     int width, height;
     int nodesPerRow, nodesPerCol;
@@ -20,16 +24,12 @@ public:
 	std::vector<Node*> nodes;
 	std::vector<Spring*> springs;
 	std::vector<Node*> faces;
-
-//    double structuralCoef;
-//    double shearCoef;
-//    double bendingCoef;
-//
-//	int		size_x, size_y, size_z;
-//	double	dx, dy, dz;
-//
-//	int		iteration_n;
-//	int		drawMode;
+    
+//    enum DrawModeEnum{
+//        DRAW_MASS_NODES,
+//        DRAW_SPRINGS,
+//        DRAW_FACES
+//    };
 
 	Cloth(int w, int h)
 	{
@@ -45,17 +45,12 @@ public:
 		springs.clear();
 		faces.clear();
 	}
-	enum DrawModeEnum{
-		DRAW_MASS_NODES,
-		DRAW_SPRINGS,
-		DRAW_FACES
-	};
  
 public:
     Node* getNode(int x, int y) { return nodes[y*nodesPerRow+x]; }
     Vec3 getFaceNormal(Node* n1, Node* n2, Node* n3)
     {
-        return Vec3::cross(n2->currPos - n1->currPos, n3->currPos - n1->currPos);
+        return Vec3::cross(n2->position - n1->position, n3->position - n1->position);
     }
     
 	void init()
@@ -71,11 +66,11 @@ public:
                 Node* node = new Node(Vec3((double)j/nodesDensity, -((double)i/nodesDensity), 0));
                 /** Set texture coordinates **/
                 node->texCoord.x = (double)j/(nodesPerRow-1);
-                node->texCoord.y = (double)i/(nodesPerCol-1);
+                node->texCoord.y = (double)i/(1-nodesPerCol);
                 /** Add node to cloth **/
                 nodes.push_back(node);
                 
-                printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, node->currPos.x, node->currPos.y, node->currPos.z, node->texCoord.x, node->texCoord.y);
+                printf("\t[%d, %d] (%f, %f, %f) - (%f, %f)\n", i, j, node->position.x, node->position.y, node->position.z, node->texCoord.x, node->texCoord.y);
             }
             std::cout << std::endl;
         }
@@ -84,28 +79,28 @@ public:
         for (int i = 0; i < nodesPerRow; i ++) {
             for (int j = 0; j < nodesPerCol; j ++) {
                 /** Structural **/
-                if (i < nodesPerRow-1) springs.push_back(new Spring(getNode(i, j), getNode(i+1, j)));
-                if (j < nodesPerCol-1) springs.push_back(new Spring(getNode(i, j), getNode(i, j+1)));
+                if (i < nodesPerRow-1) springs.push_back(new Spring(getNode(i, j), getNode(i+1, j), structuralCoef));
+                if (j < nodesPerCol-1) springs.push_back(new Spring(getNode(i, j), getNode(i, j+1), structuralCoef));
                 /** Shear **/
                 if (i < nodesPerRow-1 && j < nodesPerCol-1) {
-                    springs.push_back(new Spring(getNode(i, j), getNode(i+1, j+1)));
-                    springs.push_back(new Spring(getNode(i+1, j), getNode(i, j+1)));
+                    springs.push_back(new Spring(getNode(i, j), getNode(i+1, j+1), shearCoef));
+                    springs.push_back(new Spring(getNode(i+1, j), getNode(i, j+1), shearCoef));
                 }
                 /** Bending **/
-                if (i < nodesPerRow-2) springs.push_back(new Spring(getNode(i, j), getNode(i+2, j)));
-                if (j < nodesPerCol-2) springs.push_back(new Spring(getNode(i, j), getNode(i, j+2)));
+                if (i < nodesPerRow-2) springs.push_back(new Spring(getNode(i, j), getNode(i+2, j), bendingCoef));
+                if (j < nodesPerCol-2) springs.push_back(new Spring(getNode(i, j), getNode(i, j+2), bendingCoef));
                 if (i < nodesPerRow-2 && j < nodesPerCol-2) {
-                    springs.push_back(new Spring(getNode(i, j), getNode(i+2, j+2)));
-                    springs.push_back(new Spring(getNode(i+2, j), getNode(i, j+2)));
+                    springs.push_back(new Spring(getNode(i, j), getNode(i+2, j+2), bendingCoef));
+                    springs.push_back(new Spring(getNode(i+2, j), getNode(i, j+2), bendingCoef));
                 }
             }
         }
         
         /** Pin the cloth **/
         Vec3 pinOffset(1.0, 0.0, 0.0);
-        getNode(0, 0)->currPos += pinOffset;
+        getNode(0, 0)->position += pinOffset;
         getNode(0, 0)->isFixed = true;
-        getNode(nodesPerRow-1, 0)->currPos -= pinOffset;
+        getNode(nodesPerRow-1, 0)->position -= pinOffset;
         getNode(nodesPerRow-1, 0)->isFixed = true;
         
 		/** Triangle faces **/
@@ -137,7 +132,7 @@ public:
             Node* n3 = faces[3*i+2];
             
             // Face normal
-            normal = Vec3::cross(n2->currPos - n1->currPos, n3->currPos - n1->currPos);
+            normal = getFaceNormal(n1, n2, n3);
             // Add all face normal
             n1->normal += normal;
             n2->normal += normal;
@@ -145,50 +140,45 @@ public:
         }
 	}
 	
-	void addForce(Vec3 force)
+	void addForce(Vec3 f)
 	{		 
 		for (int i = 0; i < nodes.size(); i++)
 		{
-			nodes[i]->addForce(force);
+			nodes[i]->addForce(f);
 		}
 	}
 
-//	void computeForce(double dt, Vec3 gravity)
-//	{
-//		for (int i = 0; i < nodes.size(); i++)
-//		{
-//			nodes[i]->addForce(gravity * nodes[i]->mass);
-//		}
-//		/* Compute Force for all springs */
-//		for (int i = 0; i < springs.size(); i++)
-//		{
-//			springs[i]->applyInternalForce();
-//		}
-//	}
+	void computeForce(double timeStep, Vec3 gravity)
+	{
+        /** Nodes **/
+		for (int i = 0; i < nodes.size(); i++)
+		{
+			nodes[i]->addForce(gravity * nodes[i]->mass);
+		}
+		/** Springs **/
+		for (int i = 0; i < springs.size(); i++)
+		{
+			springs[i]->applyInternalForce(timeStep);
+		}
+	}
 
-	void integrate(double airFriction, double timeStep)
+	void integrate(double airFriction, double timeStep) // TODO: Air Friction?
 	{
         /** Node **/
         for (int i = 0; i < nodes.size(); i++)
         {
-            nodes[i]->integrate(airFriction, timeStep);
-        }
-        /** Spring **/
-        for (int i = 0; i < 25; i ++) {
-            for (int i = 0; i < springs.size(); i ++) {
-                springs[i]->applyInternalForce();
-            }
+            nodes[i]->integrate(timeStep);
         }
 	}
 	
-	void collision_response(Vec3 ground) // Assume ground is Vec3(7, -5, 0);
+	void collision_response(Vec3 ground)
 	{
 		//Basic Implements 4. Collision Check with ground
         /** Collision check with ground **/
         for (int i = 0; i < nodes.size(); i++)
         {
-            if (nodes[i]->currPos.y <= ground.y) {
-                nodes[i]->currPos.y = ground.y;
+            if (nodes[i]->position.y <= ground.y) {
+                nodes[i]->position.y = ground.y;
             }
         }
         

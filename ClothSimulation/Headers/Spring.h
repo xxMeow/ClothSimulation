@@ -11,31 +11,40 @@ class Spring
 public:
     Node *node1;
     Node *node2;
-	double initLength;
-public:
-	Spring(Node *n1, Node *n2)
+	double restLen;
+    double hookCoef;
+    double dampCoef;
+    
+	Spring(Node *n1, Node *n2, double k)
 	{
         node1 = n1;
         node2 = n2;
 		
-        Vec3 sLength = node2->currPos - node1->currPos;
-        initLength = sLength.length();
+        Vec3 currSp = node2->position - node1->position;
+        restLen = currSp.length();
+        hookCoef = k;
+        dampCoef = 5.0;
 	}
 
-	void applyInternalForce() // Compute spring internal force
+	void applyInternalForce(double timeStep) // Compute spring internal force
 	{
-        Vec3 diffVec = node2->currPos - node1->currPos;
-        double currDist = diffVec.length();
-        Vec3 posOffset = diffVec * (1 - initLength/currDist) / 2;
-        
-        if (!node1->isFixed && !node2->isFixed) {
-            node1->currPos += posOffset;
-            node2->currPos -= posOffset;
-        } else if (node1->isFixed && !node2->isFixed) {
-            node2->currPos -= posOffset*2;
-        } else if (!node1->isFixed && node2->isFixed) {
-            node1->currPos += posOffset*2;
-        }
-        
+//        Vec3 diffVec = node2->position - node1->position;
+//        double currDist = diffVec.length();
+//        Vec3 posOffset = diffVec * (1 - initLength/currDist) / 2;
+//
+//        if (!node1->isFixed && !node2->isFixed) {
+//            node1->position += posOffset;
+//            node2->position -= posOffset;
+//        } else if (node1->isFixed && !node2->isFixed) {
+//            node2->position -= posOffset*2;
+//        } else if (!node1->isFixed && node2->isFixed) {
+//            node1->position += posOffset*2;
+//        }
+        double currLen = Vec3::dist(node1->position, node2->position);
+        Vec3 fDir1 = (node2->position - node1->position)/currLen;
+        Vec3 diffV1 = node2->velocity - node1->velocity;
+        Vec3 f1 = fDir1 * ((currLen-restLen)*hookCoef + Vec3::dot(diffV1, fDir1)*dampCoef);
+        node1->addForce(f1);
+        node2->addForce(f1.minus());
 	}
 };

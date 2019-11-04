@@ -8,11 +8,19 @@
 
 struct Camera
 {
-    glm::vec3 pos = glm::vec3(-1.0f, 5.0f, 12.0f);
+    const float speed = 0.3f;
+    glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
     glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 };
 Camera cam;
+
+struct Light
+{
+    glm::vec3 pos = glm::vec3(-5.0f, 7.0f, 6.0f);
+    glm::vec3 color = glm::vec3(0.8f, 0.8f, 1.0f);
+};
+Light lamp;
 
 struct ClothRender
 {
@@ -50,7 +58,7 @@ struct ClothRender
         // The texture coord will only be set here
         for (int i = 0; i < nodeCount; i ++) {
             Node* n = cloth->faces[i];
-            vboPos[i] = glm::vec3(n->currPos.x, n->currPos.y, n->currPos.z);
+            vboPos[i] = glm::vec3(n->position.x, n->position.y, n->position.z);
             vboTex[i] = glm::vec2(n->texCoord.x, n->texCoord.y);
             vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
         }
@@ -102,7 +110,7 @@ struct ClothRender
         /** Load image and configure texture **/
         stbi_set_flip_vertically_on_load(true);
         int texW, texH, colorChannels; // After loading the image, stb_image will fill them
-        unsigned char *data = stbi_load("Images/texture.jpg", &texW, &texH, &colorChannels, 0);
+        unsigned char *data = stbi_load("Images/texture1.jpg", &texW, &texH, &colorChannels, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             // Automatically generate all the required mipmaps for the currently bound texture.
@@ -127,8 +135,12 @@ struct ClothRender
         
         /** Model Matrix : Put cloth into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
-        uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(-3.0, 6.0, 0.0));
+        uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(-cloth->width/2, cloth->height, -2.0));
         glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
+        
+        /** Light **/
+        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(lamp.pos[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(lamp.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -159,7 +171,7 @@ struct ClothRender
         // Update all the positions of nodes
         for (int i = 0; i < nodeCount; i ++) { // Tex coordinate dose not change
             Node* n = cloth->faces[i];
-            vboPos[i] = glm::vec3(n->currPos.x, n->currPos.y, n->currPos.z);
+            vboPos[i] = glm::vec3(n->position.x, n->position.y, n->position.z);
             vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
         }
         
@@ -188,8 +200,6 @@ struct ClothRender
         
         /** Draw **/
         glDrawArrays(GL_TRIANGLES, 0, nodeCount);
-        
-//        sCheckGLError();
         
         // End flushing
         glDisable(GL_BLEND);
