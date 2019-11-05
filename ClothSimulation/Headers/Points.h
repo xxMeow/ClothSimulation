@@ -8,13 +8,27 @@
 
 #include "Vector.h"
 
+struct Vertex
+{
+public:
+    Vec3 position;
+    Vec3 normal;
+    
+    Vertex() {}
+    Vertex(Vec3 pos)
+    {
+        position = pos;
+    }
+    ~Vertex() {}
+};
+
 class Node
 {
 public:
     double  mass;           // In this project it will always be 1
     bool    isFixed;        // Use to pin the cloth
     Vec2    texCoord;       // Texture coord
-    Vec3    normal;         // TODO: For shading
+    Vec3    normal;         // For smoothly shading
 	Vec3	position;
     Vec3    velocity;
     Vec3    force;
@@ -48,16 +62,10 @@ public:
 	{
 		if (!isFixed) // Verlet integration
 		{
-//            Vec3 tempPos = position;
-//            position = position + (position-prevPos)*(1-airFriction) + acceleration*pow(timeStep, 2);
-//            prevPos = tempPos;
-//            acceleration = Vec3(0.0, 0.0, 0.0); // Reset acceleration
             acceleration = force/mass;
             velocity += acceleration*timeStep;
             position += velocity*timeStep;
         }
         force.setZeroVec();
 	}
-
-//	void draw();
 };

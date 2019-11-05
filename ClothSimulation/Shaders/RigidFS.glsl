@@ -3,12 +3,9 @@
 out vec4 color;
 
 in vec3 position;
-in vec2 texCoord;
 in vec3 normal;
 
-// Texture Sampler
-uniform sampler2D uniTex;
-
+uniform vec4 uniRigidColor;
 uniform vec3 uniLightPos;
 uniform vec3 uniLightColor;
 
@@ -24,9 +21,7 @@ void main()
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = diff * uniLightColor;
 
-    // texture() will output the color obtained by sampling the texture with configured conditions
-    color = texture(uniTex, texCoord);
-    vec3 objectColor = vec3(color.x, color.y, color.z);
+    vec3 objectColor = vec3(uniRigidColor.x, uniRigidColor.y, uniRigidColor.z);
     vec3 result = (ambient + diffuse) * objectColor;
-    color = vec4(result, 1.0f);
+    color = vec4(result, uniRigidColor.z);
 }

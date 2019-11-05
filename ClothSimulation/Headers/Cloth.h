@@ -6,41 +6,42 @@
 #include <vector>
 #include <algorithm>
 
-#include "Node.h"
+#include "Points.h"
 #include "Spring.h"
+#include "Rigid.h"
 
 class Cloth
 {
 public:
     const int nodesDensity = 4;
-    const int iterationFreq = 20;
+    const int iterationFreq = 25;
     const double structuralCoef = 500.0;
     const double shearCoef = 10.0;
     const double bendingCoef = 200.0;
     
+    Vec3 clothPos;
+    
     int width, height;
     int nodesPerRow, nodesPerCol;
     
-	std::vector<Node*> nodes;
+    std::vector<Node*> nodes;
 	std::vector<Spring*> springs;
 	std::vector<Node*> faces;
     
-//    enum DrawModeEnum{
-//        DRAW_MASS_NODES,
-//        DRAW_SPRINGS,
-//        DRAW_FACES
-//    };
-
-	Cloth(int w, int h)
+    Vec2 pin1;
+    Vec2 pin2;
+    
+	Cloth(Vec3 pos, Vec2 size)
 	{
-        width = w;
-        height = h;
+        clothPos = pos;
+        width = size.x;
+        height = size.y;
         init();
 	}
 	~Cloth()
 	{ 
-		for (int i = 0; i < nodes.size(); i++){ delete nodes[i]; }
-		for (int i = 0; i < springs.size(); i++){ delete springs[i]; }
+		for (int i = 0; i < nodes.size(); i++) { delete nodes[i]; }
+		for (int i = 0; i < springs.size(); i++) { delete springs[i]; }
 		nodes.clear();
 		springs.clear();
 		faces.clear();
@@ -48,15 +49,32 @@ public:
  
 public:
     Node* getNode(int x, int y) { return nodes[y*nodesPerRow+x]; }
-    Vec3 getFaceNormal(Node* n1, Node* n2, Node* n3)
+    Vec3 computeFaceNormal(Node* n1, Node* n2, Node* n3)
     {
         return Vec3::cross(n2->position - n1->position, n3->position - n1->position);
+    }
+    
+    void pin(Vec2 index, Vec3 offset) // Pin cloth's (x, y) node with offset
+    {
+        if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) {
+            getNode(index.x, index.y)->position += offset;
+            getNode(index.x, index.y)->isFixed = true;
+        }
+    }
+    void unPin(Vec2 index) // Unpin cloth's (x, y) node
+    {
+        if (!(index.x < 0 || index.x >= nodesPerRow || index.y < 0 || index.y >= nodesPerCol)) {
+            getNode(index.x, index.y)->isFixed = false;
+        }
     }
     
 	void init()
 	{
         nodesPerRow = width * nodesDensity;
         nodesPerCol = height * nodesDensity;
+        
+        pin1 = Vec2(0, 0);
+        pin2 = Vec2(nodesPerRow-1, 0);
         
         /** Add nodes **/
         printf("Init cloth with %d nodes\n", nodesPerRow*nodesPerCol);
@@ -96,12 +114,8 @@ public:
             }
         }
         
-        /** Pin the cloth **/
-        Vec3 pinOffset(1.0, 0.0, 0.0);
-        getNode(0, 0)->position += pinOffset;
-        getNode(0, 0)->isFixed = true;
-        getNode(nodesPerRow-1, 0)->position -= pinOffset;
-        getNode(nodesPerRow-1, 0)->isFixed = true;
+        pin(pin1, Vec3(1.0, 0.0, 0.0));
+        pin(pin2, Vec3(-1.0, 0.0, 0.0));
         
 		/** Triangle faces **/
         for (int i = 0; i < nodesPerRow-1; i ++) {
@@ -132,7 +146,7 @@ public:
             Node* n3 = faces[3*i+2];
             
             // Face normal
-            normal = getFaceNormal(n1, n2, n3);
+            normal = computeFaceNormal(n1, n2, n3);
             // Add all face normal
             n1->normal += normal;
             n2->normal += normal;
@@ -171,26 +185,29 @@ public:
         }
 	}
 	
-	void collision_response(Vec3 ground)
+    Vec3 getWorldPos(Node* n) { return clothPos + n->position; }
+    void setWorldPos(Node*n, Vec3 pos) { n->position = pos - clothPos; }
+    
+	void collision_response(Ground* ground, Ball* ball)
 	{
 		//Basic Implements 4. Collision Check with ground
-        /** Collision check with ground **/
         for (int i = 0; i < nodes.size(); i++)
         {
-            if (nodes[i]->position.y <= ground.y) {
-                nodes[i]->position.y = ground.y;
+            /** Ground collision **/
+            if (getWorldPos(nodes[i]).y < ground->position.y) {
+                nodes[i]->position.y = ground->position.y - clothPos.y;
+                nodes[i]->velocity = nodes[i]->velocity * ground->friction;
+            }
+            
+            /** Ball collision **/
+            Vec3 distVec = getWorldPos(nodes[i]) - ball->center;
+            double distLen = distVec.length();
+            double safeDist = ball->radius*1.05;
+            if (distLen < safeDist) {
+                distVec.normalize();
+                setWorldPos(nodes[i], distVec*safeDist+ball->center);
+                nodes[i]->velocity = nodes[i]->velocity*ball->friction;
             }
         }
-        
-        //Additional Implements 2. Collision Check with Sphere
-        //Additional Implements 3. Collision Check with Mesh Object
-        /*
-            if(Collision Detection)
-            {
-                Collision Response
-            }
-        */
 	}
-
-//	void draw();
 };

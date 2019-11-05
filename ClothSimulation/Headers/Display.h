@@ -3,26 +3,48 @@
 #include <iostream>
 
 #include "Cloth.h"
+#include "Rigid.h"
 #include "Program.h"
 #include "stb_image.h"
 
+enum DrawModeEnum{
+    DRAW_NODES,
+    DRAW_LINES,
+    DRAW_FACES
+};
+DrawModeEnum drawMode = DRAW_FACES;
+
 struct Camera
 {
-    const float speed = 0.3f;
+    const float speed = 0.5f;
+    const float frustumRatio = 1.0f;
+    
     glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
-    glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 front = glm::vec3(0.0f, 0.0f, -2.0f);
     glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    
+    glm::mat4 uniProjMatrix;
+    glm::mat4 uniViewMatrix;
+    
+    Camera()
+    {
+        /** Projection matrix : The frustum that camera observes **/
+        uniProjMatrix = glm::mat4(1.0f);
+        uniProjMatrix = glm::perspective(glm::radians(45.0f), frustumRatio, 0.1f, 100.0f);
+        /** View Matrix : The camera **/
+        uniViewMatrix = glm::mat4(1.0f);
+    }
 };
 Camera cam;
 
 struct Light
 {
     glm::vec3 pos = glm::vec3(-5.0f, 7.0f, 6.0f);
-    glm::vec3 color = glm::vec3(0.8f, 0.8f, 1.0f);
+    glm::vec3 color = glm::vec3(0.7f, 0.7f, 1.0f);
 };
 Light lamp;
 
-struct ClothRender
+struct ClothRender // Texture & Lighting
 {
     const Cloth* cloth;
     int nodeCount; // Number of nodes in faces
@@ -31,11 +53,10 @@ struct ClothRender
     glm::vec2 *vboTex; // Texture
     glm::vec3 *vboNor; // Normal
 
+    GLuint programID;
     GLuint vaoID;
     GLuint vboIDs[3];
     GLuint texID;
-    GLuint programID;
-//    GLint uniProjMatrix;
     
     GLint aPtrPos;
     GLint aPtrTex;
@@ -110,7 +131,7 @@ struct ClothRender
         /** Load image and configure texture **/
         stbi_set_flip_vertically_on_load(true);
         int texW, texH, colorChannels; // After loading the image, stb_image will fill them
-        unsigned char *data = stbi_load("Images/texture1.jpg", &texW, &texH, &colorChannels, 0);
+        unsigned char *data = stbi_load("Images/texture.jpg", &texW, &texH, &colorChannels, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             // Automatically generate all the required mipmaps for the currently bound texture.
@@ -128,14 +149,11 @@ struct ClothRender
         
         /** Projection matrix : The frustum that camera observes **/
         // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
-        glm::mat4 uniProjMatrix = glm::mat4(1.0f);
-        float frustumRatio = 1.0; // TODO: the ratio of width and height of camera?
-        uniProjMatrix = glm::perspective(glm::radians(45.0f), frustumRatio, 0.1f, 100.0f);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &uniProjMatrix[0][0]);
+        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
         
         /** Model Matrix : Put cloth into the world **/
         glm::mat4 uniModelMatrix = glm::mat4(1.0f);
-        uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(-cloth->width/2, cloth->height, -2.0));
+        uniModelMatrix = glm::translate(uniModelMatrix, glm::vec3(cloth->clothPos.x, cloth->clothPos.y, cloth->clothPos.z));
         glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
@@ -191,15 +209,24 @@ struct ClothRender
         glBindTexture(GL_TEXTURE_2D, texID);
         
         /** View Matrix : The camera **/
-        glm::mat4 uniViewMatrix = glm::mat4(1.0f);
-        uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
-        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &uniViewMatrix[0][0]);
+        cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
+        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
         
         glEnable(GL_BLEND);
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         /** Draw **/
-        glDrawArrays(GL_TRIANGLES, 0, nodeCount);
+        switch (drawMode) {
+            case DRAW_NODES:
+                glDrawArrays(GL_POINTS, 0, nodeCount);
+                break;
+            case DRAW_LINES:
+                glDrawArrays(GL_LINES, 0, nodeCount);
+                break;
+            default:
+                glDrawArrays(GL_TRIANGLES, 0, nodeCount);
+                break;
+        }
         
         // End flushing
         glDisable(GL_BLEND);
@@ -207,4 +234,181 @@ struct ClothRender
         glBindVertexArray(0);
         glUseProgram(0);
     }
+};
+
+struct RigidRender // Single color & Lighting
+{
+    std::vector<Vertex*> faces;
+    int vertexCount; // Number of nodes in faces
+    
+    glm::vec4 uniRigidColor;
+    
+    glm::vec3 *vboPos; // Position
+    glm::vec3 *vboNor; // Normal
+
+    GLuint programID;
+    GLuint vaoID;
+    GLuint vboIDs[2];
+    
+    GLint aPtrPos;
+    GLint aPtrNor;
+    
+    void init(std::vector<Vertex*> f, glm::vec4 c, glm::vec3 modelVec) // What to render is a sphere actually
+    {
+        faces = f;
+        vertexCount = (int)(faces.size());
+        if (vertexCount <= 0) {
+            std::cout << "ERROR::RigidRender : No node exists." << std::endl;
+            exit(-1);
+        }
+        
+        uniRigidColor = c;
+        
+        vboPos = new glm::vec3[vertexCount];
+        vboNor = new glm::vec3[vertexCount];
+        
+        // The texture coord will only be set here
+        for (int i = 0; i < vertexCount; i ++) {
+            Vertex* v = faces[i];
+            vboPos[i] = glm::vec3(v->position.x, v->position.y, v->position.z);
+            vboNor[i] = glm::vec3(v->normal.x, v->normal.y, v->normal.z);
+        }
+        
+        /** Build render program **/
+        Program program("Shaders/RigidVS.glsl", "Shaders/RigidFS.glsl");
+        programID = program.ID;
+        std::cout << "Rigid Program ID: " << programID << std::endl;
+
+        // Generate ID of VAO and VBOs
+        glGenVertexArrays(1, &vaoID);
+        glGenBuffers(2, vboIDs);
+        
+        // Attribute pointers of VAO
+        aPtrPos = 0;
+        aPtrNor = 1;
+        // Bind VAO
+        glBindVertexArray(vaoID);
+        
+        // Position buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
+        glVertexAttribPointer(aPtrPos, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(glm::vec3), vboPos, GL_DYNAMIC_DRAW);
+        // Normal buffer
+        glBindBuffer(GL_ARRAY_BUFFER, vboIDs[1]);
+        glVertexAttribPointer(aPtrNor, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glBufferData(GL_ARRAY_BUFFER, vertexCount*sizeof(glm::vec3), vboNor, GL_DYNAMIC_DRAW);
+        
+        // Enable it's attribute pointers since they were set well
+        glEnableVertexAttribArray(aPtrPos);
+        glEnableVertexAttribArray(aPtrNor);
+        
+        /** Set uniform **/
+        glUseProgram(programID); // Active shader before set uniform
+        // Set color
+        glUniform4fv(glGetUniformLocation(programID, "uniRigidColor"), 1, &uniRigidColor[0]);
+        
+        /** Projection matrix : The frustum that camera observes **/
+        // Since projection matrix rarely changes, set it outside the rendering loop for only onec time
+        glUniformMatrix4fv(glGetUniformLocation(programID, "uniProjMatrix"), 1, GL_FALSE, &cam.uniProjMatrix[0][0]);
+        
+        /** Model Matrix : Put rigid into the world **/
+        glm::mat4 uniModelMatrix = glm::mat4(1.0f);
+        uniModelMatrix = glm::translate(uniModelMatrix, modelVec);
+        glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
+        
+        /** Light **/
+        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(lamp.pos[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(lamp.color[0]));
+
+        // Cleanup
+        glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
+        glBindVertexArray(0); // Unbined VAO
+    }
+    
+    void destroy()
+    {
+        delete [] vboPos;
+        delete [] vboNor;
+        
+        if (vaoID)
+        {
+            glDeleteVertexArrays(1, &vaoID);
+            glDeleteBuffers(2, vboIDs);
+            vaoID = 0;
+        }
+        if (programID)
+        {
+            glDeleteProgram(programID);
+            programID = 0;
+        }
+    }
+    
+    void flush() // Rigid does not move
+    {
+        glUseProgram(programID);
+        
+        glBindVertexArray(vaoID);
+        
+        glBindBuffer(GL_ARRAY_BUFFER, vboIDs[0]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount*sizeof(glm::vec3), vboPos);
+        glBindBuffer(GL_ARRAY_BUFFER, vboIDs[1]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertexCount* sizeof(glm::vec3), vboNor);
+        
+        /** View Matrix : The camera **/
+        cam.uniViewMatrix = glm::lookAt(cam.pos, cam.pos + cam.front, cam.up);
+        glUniformMatrix4fv(glGetUniformLocation(programID, "uniViewMatrix"), 1, GL_FALSE, &cam.uniViewMatrix[0][0]);
+        
+        glEnable(GL_BLEND);
+        glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        /** Draw **/
+        switch (drawMode) {
+            case DRAW_NODES:
+                glDrawArrays(GL_POINTS, 0, vertexCount);
+                break;
+            case DRAW_LINES:
+                glDrawArrays(GL_LINES, 0, vertexCount);
+                break;
+            default:
+                glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+                break;
+        }
+        
+        // End flushing
+        glDisable(GL_BLEND);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+        glUseProgram(0);
+    }
+};
+
+struct GroundRender
+{
+    Ground *ground;
+    
+    RigidRender render;
+    
+    GroundRender(Ground* g)
+    {
+        ground = g;
+        render.init(ground->faces, ground->color, glm::vec3(ground->position.x, ground->position.y, ground->position.z));
+    }
+    
+    void flush() { render.flush(); }
+};
+
+struct BallRender
+{
+    Ball* ball;
+    
+    RigidRender render;
+    
+    BallRender(Ball* b)
+    {
+        ball = b;
+        
+        render.init(ball->sphere->faces, ball->color, glm::vec3(ball->center.x, ball->center.y, ball->center.z));
+    }
+    
+    void flush() { render.flush(); }
 };

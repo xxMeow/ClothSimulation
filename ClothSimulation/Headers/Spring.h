@@ -2,7 +2,7 @@
  
 #include <iostream>
 
-#include "Node.h"
+#include "Points.h"
 
 using namespace std;
 
@@ -28,18 +28,6 @@ public:
 
 	void applyInternalForce(double timeStep) // Compute spring internal force
 	{
-//        Vec3 diffVec = node2->position - node1->position;
-//        double currDist = diffVec.length();
-//        Vec3 posOffset = diffVec * (1 - initLength/currDist) / 2;
-//
-//        if (!node1->isFixed && !node2->isFixed) {
-//            node1->position += posOffset;
-//            node2->position -= posOffset;
-//        } else if (node1->isFixed && !node2->isFixed) {
-//            node2->position -= posOffset*2;
-//        } else if (!node1->isFixed && node2->isFixed) {
-//            node1->position += posOffset*2;
-//        }
         double currLen = Vec3::dist(node1->position, node2->position);
         Vec3 fDir1 = (node2->position - node1->position)/currLen;
         Vec3 diffV1 = node2->velocity - node1->velocity;
