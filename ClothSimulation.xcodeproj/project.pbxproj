@@ -11,7 +11,6 @@
 		CA7A28E8236DDD00005139B4 /* libglfw.3.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CA7A28E7236DDD00005139B4 /* libglfw.3.3.dylib */; };
 		CA7A28EA236DDD16005139B4 /* libGLEW.2.1.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CA7A28E9236DDD16005139B4 /* libGLEW.2.1.0.dylib */; };
 		CA7A28EE236DDD55005139B4 /* glad.c in Sources */ = {isa = PBXBuildFile; fileRef = CA7A28ED236DDD55005139B4 /* glad.c */; };
-		CA7A28FA236DE27D005139B4 /* HeaderProc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */; };
 		CA9A0AC0236DA3C20016A886 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CA9A0ABF236DA3C20016A886 /* main.cpp */; };
 /* End PBXBuildFile section */
 
@@ -38,7 +37,6 @@
 		CA7A28F6236DE1C9005139B4 /* ClothVS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = ClothVS.glsl; sourceTree = "<group>"; };
 		CA7A28F7236DE1E2005139B4 /* ClothFS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = ClothFS.glsl; sourceTree = "<group>"; };
 		CA7A28F8236DE21E005139B4 /* Program.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
-		CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HeaderProc.cpp; sourceTree = "<group>"; };
 		CA7A28FC236DE29A005139B4 /* stb_image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		CA7A28FE236DE559005139B4 /* Points.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Points.h; sourceTree = "<group>"; };
 		CA7A28FF236DE559005139B4 /* Spring.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Spring.h; sourceTree = "<group>"; };
@@ -86,7 +84,6 @@
 		CA7A28F3236DE03A005139B4 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				CA7A28FC236DE29A005139B4 /* stb_image.h */,
 				CA7A2901236DE55A005139B4 /* Vector.h */,
 				CA7A28FE236DE559005139B4 /* Points.h */,
 				CA7A28FF236DE559005139B4 /* Spring.h */,
@@ -94,6 +91,7 @@
 				CA9C9A7B23715BB20052FBA1 /* Rigid.h */,
 				CA7A28F8236DE21E005139B4 /* Program.h */,
 				CA0CB93D236F400B0065DBE2 /* Display.h */,
+				CA7A28FC236DE29A005139B4 /* stb_image.h */,
 			);
 			path = Headers;
 			sourceTree = "<group>";
@@ -131,7 +129,6 @@
 			children = (
 				CA7A28F1236DDFC7005139B4 /* ClothSimulation.entitlements */,
 				CA7A28ED236DDD55005139B4 /* glad.c */,
-				CA7A28F9236DE27D005139B4 /* HeaderProc.cpp */,
 				CA9A0ABF236DA3C20016A886 /* main.cpp */,
 				CA7A28F3236DE03A005139B4 /* Headers */,
 				CA7A28F4236DE047005139B4 /* Shaders */,
@@ -199,7 +196,6 @@
 			files = (
 				CA9A0AC0236DA3C20016A886 /* main.cpp in Sources */,
 				CA7A28EE236DDD55005139B4 /* glad.c in Sources */,
-				CA7A28FA236DE27D005139B4 /* HeaderProc.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

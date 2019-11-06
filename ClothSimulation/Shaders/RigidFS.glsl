@@ -23,5 +23,5 @@ void main()
 
     vec3 objectColor = vec3(uniRigidColor.x, uniRigidColor.y, uniRigidColor.z);
     vec3 result = (ambient + diffuse) * objectColor;
-    color = vec4(result, uniRigidColor.z);
+    color = vec4(result, uniRigidColor.w);
 }

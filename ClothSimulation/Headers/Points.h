@@ -1,11 +1,5 @@
 #pragma once
 
-#include <stdio.h>
-#include <math.h>
-
-#include <vector>
-#include <algorithm>
-
 #include "Vector.h"
 
 struct Vertex

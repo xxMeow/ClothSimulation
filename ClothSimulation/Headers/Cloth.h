@@ -1,12 +1,7 @@
 #pragma once
 
-#include <stdio.h>
-#include <math.h>
-
 #include <vector>
-#include <algorithm>
 
-#include "Points.h"
 #include "Spring.h"
 #include "Rigid.h"
 
@@ -190,12 +185,11 @@ public:
     
 	void collision_response(Ground* ground, Ball* ball)
 	{
-		//Basic Implements 4. Collision Check with ground
         for (int i = 0; i < nodes.size(); i++)
         {
             /** Ground collision **/
             if (getWorldPos(nodes[i]).y < ground->position.y) {
-                nodes[i]->position.y = ground->position.y - clothPos.y;
+                nodes[i]->position.y = ground->position.y - clothPos.y + 0.01;
                 nodes[i]->velocity = nodes[i]->velocity * ground->friction;
             }
             

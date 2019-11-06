@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cmath>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "Headers/stb_image.h"
 #include "Headers/Cloth.h"
 #include "Headers/Rigid.h"
@@ -27,24 +28,24 @@ void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 /** Global **/
-GLFWwindow *window;
-
-Vec3 clothPos(-3, 7, -3);
+// Cloth
+Vec3 clothPos(-3, 7.5, -2);
 Vec2 clothSize(6, 6);
 Cloth cloth(clothPos, clothSize);
-
-Vec3 groundPos(-10, 1.5, -10);
-Vec2 groundSize(20, 20);
-glm::vec4 groundColor(1.0, 1.0, 1.0, 1.0);
+// Ground
+Vec3 groundPos(-5, 1.5, 0);
+Vec2 groundSize(10, 10);
+glm::vec4 groundColor(0.8, 0.8, 0.8, 1.0);
 Ground ground(groundPos, groundSize, groundColor);
-
-Vec3 ballPos(0, 2, -3);
+// Ball
+Vec3 ballPos(0, 3, -2);
 int ballRadius = 1;
-glm::vec4 ballColor(1.0f, 0.0f, 1.0f, 1.0f);
+glm::vec4 ballColor(0.6f, 0.5f, 0.8f, 1.0f);
 Ball ball(ballPos, ballRadius, ballColor);
-
+// Window and world
+GLFWwindow *window;
+Vec3 bgColor = Vec3(50.0/255, 50.0/255, 60.0/255);
 Vec3 gravity(0.0, -9.8 / cloth.iterationFreq, 0.0);
-Vec3 bgColor = Vec3(50.0/255, 50.0/255, 50.0/255);
 
 int main(int argc, const char * argv[])
 {
@@ -82,10 +83,12 @@ int main(int argc, const char * argv[])
     // Callback functions should be registered after creating window and before initializing render loop
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
+    /** Renderers **/
     ClothRender clothRender(&cloth);
+    GroundRender groundRender(&ground);
     BallRender ballRender(&ball);
     
-    Vec3 initForce(10.0, 10.0, 10.0);
+    Vec3 initForce(10.0, 40.0, 20.0);
     cloth.addForce(initForce);
     
     glEnable(GL_DEPTH_TEST);
@@ -112,6 +115,7 @@ int main(int argc, const char * argv[])
         
         clothRender.flush();
         ballRender.flush();
+        groundRender.flush();
         
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
@@ -135,12 +139,6 @@ void processInput(GLFWwindow *window)
     /** Keyboard control **/ // If key did not get pressed it will return GLFW_RELEASE
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-        //
-    }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-        //
     }
     
     /** Set draw mode **/

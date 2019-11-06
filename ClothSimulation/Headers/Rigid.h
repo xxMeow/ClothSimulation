@@ -5,7 +5,6 @@
 #include <cmath>
 #include <vector>
 
-#include "Vector.h"
 #include "Points.h"
 
 struct Ground
@@ -13,7 +12,7 @@ struct Ground
     Vec3 position;
     int width, height;
     glm::vec4 color;
-    const double friction = 0.9;
+    const double friction = 0.1;
     
     std::vector<Vertex*> vertexes;
     std::vector<Vertex*> faces;
@@ -35,12 +34,10 @@ struct Ground
     
     void init()
     {
-        double x = width/2.0;
-        double z = height/2.0;
-        vertexes.push_back(new Vertex(Vec3(-x, 0.0, z)));
-        vertexes.push_back(new Vertex(Vec3(x, 0.0, z)));
-        vertexes.push_back(new Vertex(Vec3(-x, 0.0, -z)));
-        vertexes.push_back(new Vertex(Vec3(x, 0.0, -z)));
+        vertexes.push_back(new Vertex(Vec3(0.0, 0.0, 0.0)));
+        vertexes.push_back(new Vertex(Vec3(width, 0.0, 0.0)));
+        vertexes.push_back(new Vertex(Vec3(0.0, 0.0, -height)));
+        vertexes.push_back(new Vertex(Vec3(width, 0.0, -height)));
         
         for (int i = 0; i < vertexes.size(); i ++) {
             vertexes[i]->normal = Vec3(0.0, 1.0, 0.0);
@@ -170,18 +167,6 @@ public:
         
         /** Set normals **/
         computeSphereNormal();
-        
-        // Print all vertexes' data for debuging
-        printf("Sphere has %d nodes.\n\n", (int)vertexes.size());
-        printf("* (%f, %f, %f)\n\n", getTop()->position.x, getTop()->position.y, getTop()->position.z);
-        for (int i = 0; i < 20; i ++) {
-            for (int j = 0; j < 3; j ++) {
-                Vertex* v = faces[i*3+j];
-                printf("[%d-%d] (%f, %f, %f) - (%f, %f, %f)\n", i, j, v->position.x, v->position.y, v->position.z, v->normal.x, v->normal.y, v->normal.z);
-            }
-            printf("\n");
-        }
-        printf("* (%f, %f, %f)\n\n", getBottom()->position.x, getBottom()->position.y, getBottom()->position.z);
     }
 };
 
@@ -190,7 +175,7 @@ struct Ball
     Vec3 center;
     int radius;
     glm::vec4 color;
-    const double friction = 0.7;
+    const double friction = 0.15;
     
     Sphere* sphere;
     

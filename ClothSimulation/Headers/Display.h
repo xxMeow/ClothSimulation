@@ -42,12 +42,12 @@ struct Light
     glm::vec3 pos = glm::vec3(-5.0f, 7.0f, 6.0f);
     glm::vec3 color = glm::vec3(0.7f, 0.7f, 1.0f);
 };
-Light lamp;
+Light sun;
 
 struct ClothRender // Texture & Lighting
 {
     const Cloth* cloth;
-    int nodeCount; // Number of nodes in faces
+    int nodeCount; // Number of all nodes in faces
     
     glm::vec3 *vboPos; // Position
     glm::vec2 *vboTex; // Texture
@@ -75,12 +75,10 @@ struct ClothRender // Texture & Lighting
         vboPos = new glm::vec3[nodeCount];
         vboTex = new glm::vec2[nodeCount];
         vboNor = new glm::vec3[nodeCount];
-        
-        // The texture coord will only be set here
         for (int i = 0; i < nodeCount; i ++) {
             Node* n = cloth->faces[i];
             vboPos[i] = glm::vec3(n->position.x, n->position.y, n->position.z);
-            vboTex[i] = glm::vec2(n->texCoord.x, n->texCoord.y);
+            vboTex[i] = glm::vec2(n->texCoord.x, n->texCoord.y); // Texture coord will only be set here
             vboNor[i] = glm::vec3(n->normal.x, n->normal.y, n->normal.z);
         }
         
@@ -157,8 +155,8 @@ struct ClothRender // Texture & Lighting
         glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
-        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(lamp.pos[0]));
-        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(lamp.color[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -253,7 +251,8 @@ struct RigidRender // Single color & Lighting
     GLint aPtrPos;
     GLint aPtrNor;
     
-    void init(std::vector<Vertex*> f, glm::vec4 c, glm::vec3 modelVec) // What to render is a sphere actually
+    // Render any rigid body only with it's faces, color and modelVector
+    void init(std::vector<Vertex*> f, glm::vec4 c, glm::vec3 modelVec)
     {
         faces = f;
         vertexCount = (int)(faces.size());
@@ -266,8 +265,6 @@ struct RigidRender // Single color & Lighting
         
         vboPos = new glm::vec3[vertexCount];
         vboNor = new glm::vec3[vertexCount];
-        
-        // The texture coord will only be set here
         for (int i = 0; i < vertexCount; i ++) {
             Vertex* v = faces[i];
             vboPos[i] = glm::vec3(v->position.x, v->position.y, v->position.z);
@@ -317,8 +314,8 @@ struct RigidRender // Single color & Lighting
         glUniformMatrix4fv(glGetUniformLocation(programID, "uniModelMatrix"), 1, GL_FALSE, &uniModelMatrix[0][0]);
         
         /** Light **/
-        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(lamp.pos[0]));
-        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(lamp.color[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightPos"), 1, &(sun.pos[0]));
+        glUniform3fv(glGetUniformLocation(programID, "uniLightColor"), 1, &(sun.color[0]));
 
         // Cleanup
         glBindBuffer(GL_ARRAY_BUFFER, 0); // Unbined VBO
@@ -343,7 +340,7 @@ struct RigidRender // Single color & Lighting
         }
     }
     
-    void flush() // Rigid does not move
+    void flush() // Rigid does not move, thus do not update vertexes' data
     {
         glUseProgram(programID);
         
@@ -385,7 +382,6 @@ struct RigidRender // Single color & Lighting
 struct GroundRender
 {
     Ground *ground;
-    
     RigidRender render;
     
     GroundRender(Ground* g)
@@ -400,13 +396,11 @@ struct GroundRender
 struct BallRender
 {
     Ball* ball;
-    
     RigidRender render;
     
     BallRender(Ball* b)
     {
         ball = b;
-        
         render.init(ball->sphere->faces, ball->color, glm::vec3(ball->center.x, ball->center.y, ball->center.z));
     }
     
