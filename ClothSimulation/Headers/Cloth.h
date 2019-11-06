@@ -171,7 +171,7 @@ public:
 		}
 	}
 
-	void integrate(double airFriction, double timeStep) // TODO: Air Friction?
+	void integrate(double airFriction, double timeStep)
 	{
         /** Node **/
         for (int i = 0; i < nodes.size(); i++)
@@ -183,7 +183,7 @@ public:
     Vec3 getWorldPos(Node* n) { return clothPos + n->position; }
     void setWorldPos(Node*n, Vec3 pos) { n->position = pos - clothPos; }
     
-	void collision_response(Ground* ground, Ball* ball)
+	void collisionResponse(Ground* ground, Ball* ball)
 	{
         for (int i = 0; i < nodes.size(); i++)
         {

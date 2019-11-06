@@ -109,7 +109,7 @@ int main(int argc, const char * argv[])
         for (int i = 0; i < cloth.iterationFreq; i ++) {
             cloth.computeForce(TIME_STEP, gravity);
             cloth.integrate(AIR_FRICTION, TIME_STEP);
-            cloth.collision_response(&ground, &ball);
+            cloth.collisionResponse(&ground, &ball);
         }
         cloth.computeNormal();
         
