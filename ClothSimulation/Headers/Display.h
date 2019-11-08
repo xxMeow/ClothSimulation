@@ -7,16 +7,9 @@
 #include "Program.h"
 #include "stb_image.h"
 
-enum DrawModeEnum{
-    DRAW_NODES,
-    DRAW_LINES,
-    DRAW_FACES
-};
-DrawModeEnum drawMode = DRAW_FACES;
-
 struct Camera
 {
-    const float speed = 0.5f;
+    const float speed = 0.07f;
     const float frustumRatio = 1.0f;
     
     glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
@@ -214,11 +207,11 @@ struct ClothRender // Texture & Lighting
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         /** Draw **/
-        switch (drawMode) {
-            case DRAW_NODES:
+        switch (cloth->drawMode) {
+            case Cloth::DRAW_NODES:
                 glDrawArrays(GL_POINTS, 0, nodeCount);
                 break;
-            case DRAW_LINES:
+            case Cloth::DRAW_LINES:
                 glDrawArrays(GL_LINES, 0, nodeCount);
                 break;
             default:
@@ -359,17 +352,7 @@ struct RigidRender // Single color & Lighting
         glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         
         /** Draw **/
-        switch (drawMode) {
-            case DRAW_NODES:
-                glDrawArrays(GL_POINTS, 0, vertexCount);
-                break;
-            case DRAW_LINES:
-                glDrawArrays(GL_LINES, 0, vertexCount);
-                break;
-            default:
-                glDrawArrays(GL_TRIANGLES, 0, vertexCount);
-                break;
-        }
+        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
         
         // End flushing
         glDisable(GL_BLEND);

@@ -10,9 +10,16 @@ class Cloth
 public:
     const int nodesDensity = 4;
     const int iterationFreq = 25;
-    const double structuralCoef = 500.0;
-    const double shearCoef = 10.0;
-    const double bendingCoef = 200.0;
+    const double structuralCoef = 1000.0;
+    const double shearCoef = 50.0;
+    const double bendingCoef = 400.0;
+    
+    enum DrawModeEnum{
+        DRAW_NODES,
+        DRAW_LINES,
+        DRAW_FACES
+    };
+    DrawModeEnum drawMode = DRAW_FACES;
     
     Vec3 clothPos;
     
@@ -102,10 +109,6 @@ public:
                 /** Bending **/
                 if (i < nodesPerRow-2) springs.push_back(new Spring(getNode(i, j), getNode(i+2, j), bendingCoef));
                 if (j < nodesPerCol-2) springs.push_back(new Spring(getNode(i, j), getNode(i, j+2), bendingCoef));
-                if (i < nodesPerRow-2 && j < nodesPerCol-2) {
-                    springs.push_back(new Spring(getNode(i, j), getNode(i+2, j+2), bendingCoef));
-                    springs.push_back(new Spring(getNode(i+2, j), getNode(i, j+2), bendingCoef));
-                }
             }
         }
         

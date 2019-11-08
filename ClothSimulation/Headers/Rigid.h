@@ -12,7 +12,7 @@ struct Ground
     Vec3 position;
     int width, height;
     glm::vec4 color;
-    const double friction = 0.1;
+    const double friction = 0.9;
     
     std::vector<Vertex*> vertexes;
     std::vector<Vertex*> faces;
@@ -175,7 +175,7 @@ struct Ball
     Vec3 center;
     int radius;
     glm::vec4 color;
-    const double friction = 0.15;
+    const double friction = 0.8;
     
     Sphere* sphere;
     

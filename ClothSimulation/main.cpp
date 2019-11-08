@@ -143,13 +143,13 @@ void processInput(GLFWwindow *window)
     
     /** Set draw mode **/
     if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-        drawMode = DRAW_NODES;
+        cloth.drawMode = Cloth::DRAW_NODES;
     }
     if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-        drawMode = DRAW_LINES;
+        cloth.drawMode = Cloth::DRAW_LINES;
     }
     if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
-        drawMode = DRAW_FACES;
+        cloth.drawMode = Cloth::DRAW_FACES;
     }
     
     /** Drop the cloth **/
@@ -161,24 +161,23 @@ void processInput(GLFWwindow *window)
     }
     
     /** Camera control : [W] [S] [A] [D] [Q] [E] **/
-    float camSpeed = 0.05f;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        cam.pos.y += camSpeed;
+        cam.pos.y += cam.speed;
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        cam.pos.y -= camSpeed;
+        cam.pos.y -= cam.speed;
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        cam.pos.x -= camSpeed;
+        cam.pos.x -= cam.speed;
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        cam.pos.x += camSpeed;
+        cam.pos.x += cam.speed;
     }
     if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-        cam.pos.z -= camSpeed;
+        cam.pos.z -= cam.speed;
     }
     if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) {
-        cam.pos.z += camSpeed;
+        cam.pos.z += cam.speed;
     }
     
     /** Pull cloth **/
