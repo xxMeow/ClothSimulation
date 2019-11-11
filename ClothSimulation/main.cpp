@@ -114,18 +114,17 @@ int main(int argc, const char * argv[])
         }
         cloth.computeNormal();
         
+        /** Display **/
         if (cloth.drawMode == Cloth::DRAW_LINES) {
             clothSpringRender.flush();
         } else {
             clothRender.flush();
         }
-        
         ballRender.flush();
         groundRender.flush();
         
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
-        /** Display **/
         glfwSwapBuffers(window);
         glfwPollEvents(); // Update the status of window
     }
