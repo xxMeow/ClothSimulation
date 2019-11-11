@@ -47,6 +47,8 @@
 		CA9C9A79237150CF0052FBA1 /* RigidVS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = RigidVS.glsl; sourceTree = "<group>"; };
 		CA9C9A7A237150DC0052FBA1 /* RigidFS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = RigidFS.glsl; sourceTree = "<group>"; };
 		CA9C9A7B23715BB20052FBA1 /* Rigid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Rigid.h; sourceTree = "<group>"; };
+		CAE7D0D82378FE9200E4A1A0 /* SpringVS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = SpringVS.glsl; sourceTree = "<group>"; };
+		CAE7D0D92378FEA000E4A1A0 /* SpringFS.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = SpringFS.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,8 @@
 			children = (
 				CA7A28F6236DE1C9005139B4 /* ClothVS.glsl */,
 				CA7A28F7236DE1E2005139B4 /* ClothFS.glsl */,
+				CAE7D0D82378FE9200E4A1A0 /* SpringVS.glsl */,
+				CAE7D0D92378FEA000E4A1A0 /* SpringFS.glsl */,
 				CA9C9A79237150CF0052FBA1 /* RigidVS.glsl */,
 				CA9C9A7A237150DC0052FBA1 /* RigidFS.glsl */,
 			);

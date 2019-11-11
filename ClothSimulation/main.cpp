@@ -85,6 +85,7 @@ int main(int argc, const char * argv[])
     
     /** Renderers **/
     ClothRender clothRender(&cloth);
+    ClothSpringRender clothSpringRender(&cloth);
     GroundRender groundRender(&ground);
     BallRender ballRender(&ball);
     
@@ -113,7 +114,12 @@ int main(int argc, const char * argv[])
         }
         cloth.computeNormal();
         
-        clothRender.flush();
+        if (cloth.drawMode == Cloth::DRAW_LINES) {
+            clothSpringRender.flush();
+        } else {
+            clothRender.flush();
+        }
+        
         ballRender.flush();
         groundRender.flush();
         
