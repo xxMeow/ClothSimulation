@@ -86,8 +86,8 @@
 		CA7A28F3236DE03A005139B4 /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				CA7A2901236DE55A005139B4 /* Vector.h */,
 				CA7A28FE236DE559005139B4 /* Points.h */,
+				CA7A2901236DE55A005139B4 /* Vector.h */,
 				CA7A28FF236DE559005139B4 /* Spring.h */,
 				CA7A2903236DE55A005139B4 /* Cloth.h */,
 				CA9C9A7B23715BB20052FBA1 /* Rigid.h */,

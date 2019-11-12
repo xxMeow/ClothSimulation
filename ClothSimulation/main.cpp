@@ -21,6 +21,9 @@
 #define AIR_FRICTION 0.02
 #define TIME_STEP 0.01
 
+/** Executing Flow **/
+int running = 1;
+
 /** Functions **/
 void processInput(GLFWwindow *window);
 
@@ -96,6 +99,7 @@ int main(int argc, const char * argv[])
     glPointSize(3);
     
     /** Redering loop **/
+    running = 1;
     while (!glfwWindowShouldClose(window))
     {
         /** Check for events **/
@@ -107,12 +111,14 @@ int main(int argc, const char * argv[])
         
         /** -------------------------------- Simulation & Rendering -------------------------------- **/
         
-        for (int i = 0; i < cloth.iterationFreq; i ++) {
-            cloth.computeForce(TIME_STEP, gravity);
-            cloth.integrate(AIR_FRICTION, TIME_STEP);
-            cloth.collisionResponse(&ground, &ball);
+        if (running) {
+            for (int i = 0; i < cloth.iterationFreq; i ++) {
+                cloth.computeForce(TIME_STEP, gravity);
+                cloth.integrate(AIR_FRICTION, TIME_STEP);
+                cloth.collisionResponse(&ground, &ball);
+            }
+            cloth.computeNormal();
         }
-        cloth.computeNormal();
         
         /** Display **/
         if (cloth.drawMode == Cloth::DRAW_LINES) {
@@ -157,14 +163,6 @@ void processInput(GLFWwindow *window)
         cloth.drawMode = Cloth::DRAW_FACES;
     }
     
-    /** Drop the cloth **/
-    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-            cloth.unPin(cloth.pin1);
-    }
-    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-        cloth.unPin(cloth.pin2);
-    }
-    
     /** Camera control : [W] [S] [A] [D] [Q] [E] **/
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cam.pos.y += cam.speed;
@@ -185,18 +183,36 @@ void processInput(GLFWwindow *window)
         cam.pos.z += cam.speed;
     }
     
+    /** Pause simulation **/
+    if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS) {
+        running = 0;
+        printf("Paused.\n");
+    }
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+        running = 1;
+        printf("Running..\n");
+    }
+    
+    /** Drop the cloth **/
+    if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS && running) {
+        cloth.unPin(cloth.pin1);
+    }
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS && running) {
+        cloth.unPin(cloth.pin2);
+    }
+    
     /** Pull cloth **/
     const double force = 12.0;
-    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
         cloth.addForce(Vec3(0.0, 0.0, -force));
     }
-    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
         cloth.addForce(Vec3(0.0, 0.0, force));
     }
-    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
         cloth.addForce(Vec3(-force, 0.0, 0.0));
     }
-    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
         cloth.addForce(Vec3(force, 0.0, 0.0));
     }
 }

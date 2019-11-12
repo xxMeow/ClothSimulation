@@ -9,7 +9,7 @@
 
 struct Camera
 {
-    const float speed = 0.07f;
+    const float speed = 0.05f;
     const float frustumRatio = 1.0f;
     
     glm::vec3 pos = glm::vec3(0.0f, 4.0f, 12.0f);
