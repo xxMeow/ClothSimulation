@@ -1,7 +1,7 @@
 # Cloth Simulation
-<center class="half">
-  <img src="Images/DrawMode1.png" alt="DrawMode1" width="25%"/><img src="Images/DrawMode2.png" alt="DrawMode2" width="25%"/><img src="Images/DrawMode3.png" alt="DrawMode3" width="25%"/>
-</center>
+<div class="center">
+  <img src="Images/DrawMode1.png" alt="DrawMode1" width="30%"/><img src="Images/DrawMode2.png" alt="DrawMode2" width="30%"/><img src="Images/DrawMode3.png" alt="DrawMode3" width="30%"/>
+</div>
 
 ### UI
 `main.cpp` > `void processInput(GLFWwindow *window)`
@@ -62,3 +62,4 @@
   - `struct RigidRender`
   - `struct GroundRender`
   - `struct BallRender`
+  
