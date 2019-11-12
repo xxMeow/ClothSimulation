@@ -122,7 +122,7 @@ struct ClothRender // Texture & Lighting
         /** Load image and configure texture **/
         stbi_set_flip_vertically_on_load(true);
         int texW, texH, colorChannels; // After loading the image, stb_image will fill them
-        unsigned char *data = stbi_load("Images/texture.jpg", &texW, &texH, &colorChannels, 0);
+        unsigned char *data = stbi_load("Textures/tex1.jpg", &texW, &texH, &colorChannels, 0);
         if (data) {
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texW, texH, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
             // Automatically generate all the required mipmaps for the currently bound texture.
