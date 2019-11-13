@@ -29,8 +29,16 @@ void processInput(GLFWwindow *window);
 
 /** Callback functions **/
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+void cursor_pos_callback(GLFWwindow *window, double xpos, double ypos);
 
 /** Global **/
+// Wind
+int windBlowing = 0;
+int windForceScale = 15;
+Vec3 windStartPos;
+Vec3 windDir;
+Vec3 wind;
 // Cloth
 Vec3 clothPos(-3, 7.5, -2);
 Vec2 clothSize(6, 6);
@@ -85,6 +93,8 @@ int main(int argc, const char * argv[])
     /** Register callback functions **/
     // Callback functions should be registered after creating window and before initializing render loop
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetCursorPosCallback(window, cursor_pos_callback);
     
     /** Renderers **/
     ClothRender clothRender(&cloth);
@@ -145,6 +155,34 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && running) // Start wind
+    {
+        windBlowing = 1;
+        // Set start point of wind direction
+        windStartPos.setZeroVec();
+        glfwGetCursorPos(window, &windStartPos.x, &windStartPos.y);
+        windStartPos.y = -windStartPos.y; // Reverse y since the screen local in the fourth quadrant
+    }
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE && running) // End wind
+    {
+        windBlowing = 0;
+        windDir.setZeroVec();
+    }
+}
+
+void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    /** Wind **/
+    if (windBlowing && running) {
+        windDir = Vec3(xpos, -ypos, 0) - windStartPos;
+        windDir.normalize();
+        wind = windDir * windForceScale;
+        cloth.addForce(wind);
+    }
+}
+
 void processInput(GLFWwindow *window)
 {
     /** Keyboard control **/ // If key did not get pressed it will return GLFW_RELEASE
@@ -202,17 +240,16 @@ void processInput(GLFWwindow *window)
     }
     
     /** Pull cloth **/
-    const double force = 12.0;
     if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(0.0, 0.0, -force));
+        cloth.addForce(Vec3(0.0, 0.0, -windForceScale));
     }
     if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(0.0, 0.0, force));
+        cloth.addForce(Vec3(0.0, 0.0, windForceScale));
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(-force, 0.0, 0.0));
+        cloth.addForce(Vec3(-windForceScale, 0.0, 0.0));
     }
     if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS && running) {
-        cloth.addForce(Vec3(force, 0.0, 0.0));
+        cloth.addForce(Vec3(windForceScale, 0.0, 0.0));
     }
 }
