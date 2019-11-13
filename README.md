@@ -4,7 +4,6 @@
 </div>
 
 ### UI
-`main.cpp` > `void processInput(GLFWwindow *window)`
 - ##### Window
   - `ESC` Exit
 - ##### Draw Mode: Change the rendering mode of cloth
