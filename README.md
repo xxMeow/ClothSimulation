@@ -18,6 +18,7 @@
   - `T` Pause
   - `R` Resume
 - ##### Wind Force
+  - `MOUSE_BUTTON_LEFT` Click to apply wind force
   - `↑` `↓` `←` `→` Apply wind force
 - ##### Pin Point
   - `O` Free left pin
