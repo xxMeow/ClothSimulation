@@ -150,6 +150,10 @@ public:
             n2->normal += normal;
             n3->normal += normal;
         }
+        
+        for (int i = 0; i < nodes.size(); i ++) {
+            nodes[i]->normal.normalize();
+        }
 	}
 	
 	void addForce(Vec3 f)

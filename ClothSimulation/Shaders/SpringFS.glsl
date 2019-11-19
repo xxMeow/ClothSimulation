@@ -16,9 +16,8 @@ void main()
     vec3 ambient = ambientStrength * uniLightColor;
 
     // Diffuse
-    vec3 norm = normalize(normal);
     vec3 lightDir = normalize(uniLightPos - position);
-    float diff = max(dot(norm, lightDir), 0.0);
+    float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * uniLightColor;
 
     vec3 objectColor = vec3(uniSpringColor.x, uniSpringColor.y, uniSpringColor.z);

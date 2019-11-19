@@ -40,7 +40,7 @@ struct Ground
         vertexes.push_back(new Vertex(Vec3(width, 0.0, -height)));
         
         for (int i = 0; i < vertexes.size(); i ++) {
-            vertexes[i]->normal = Vec3(0.0, 1.0, 0.0);
+            vertexes[i]->normal = Vec3(0.0, 1.0, 0.0); // It's not neccessery to normalize here
             
             // Debug info
             printf("Ground[%d]: (%f, %f, %f) - (%f, %f, %f)\n", i, vertexes[i]->position.x, vertexes[i]->position.y, vertexes[i]->position.z, vertexes[i]->normal.x, vertexes[i]->normal.y, vertexes[i]->normal.z);
@@ -59,7 +59,7 @@ class Sphere
 {
 public:
     const int meridianNum = 24;
-    const int parallelNum = 17;
+    const int parallelNum = 250;
     
     int radius;
     
@@ -113,6 +113,10 @@ public:
             v2->normal += normal;
             v3->normal += normal;
         }
+        
+        for (int i = 0; i < vertexes.size(); i ++) {
+            vertexes[i]->normal.normalize();
+        }
     }
     
     void init() // Initialize vertexes coord and slice faces
@@ -142,8 +146,8 @@ public:
         /** Slice faces **/
         // Top cycle
         for (int i = 0; i < meridianNum; i ++) {
-            faces.push_back(getTop());                                      //   *   //
-            faces.push_back(getVertex(0, i));                               //  / \  //
+            faces.push_back(getVertex(0, i));                               //   *   //
+            faces.push_back(getTop());                                      //  / \  //
             faces.push_back(getVertex(0, (i+1)%meridianNum));               // *---* //
         }
         // Middle cycles
