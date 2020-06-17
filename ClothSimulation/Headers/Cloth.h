@@ -188,7 +188,7 @@ public:
 	}
 	
     Vec3 getWorldPos(Node* n) { return clothPos + n->position; }
-    void setWorldPos(Node*n, Vec3 pos) { n->position = pos - clothPos; }
+    void setWorldPos(Node* n, Vec3 pos) { n->position = pos - clothPos; }
     
 	void collisionResponse(Ground* ground, Ball* ball)
 	{
